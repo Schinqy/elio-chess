@@ -1,18 +1,34 @@
 // app/components/ChessAnalysisForm.tsx
-
-'use client';
-
+'use client'
 import React, { useState, ChangeEvent, FormEvent } from 'react';
+import TypingEffect from './TypingEffectSlogan';
 
 const ChessAnalysisForm = () => {
   const [handle, setHandle] = useState<string>('');
   const [pgnFile, setPgnFile] = useState<File | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
+  const [formValid, setFormValid] = useState<boolean>(false);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setPgnFile(e.target.files[0]);
+      setFormValid(!!playerName && !!e.target.files[0]); // Enable button if playerName is not empty and file is selected
+    } else {
+      setPgnFile(null);
+      setFormValid(false);
     }
+  };
+
+  const handlePlayerNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setPlayerName(name);
+    setFormValid(!!pgnFile && !!name); // Enable button if both file is selected and playerName is not empty
+  };
+
+  const handleLichessHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const username = e.target.value;
+    setHandle(username);
+    setFormValid(!!username); // Enable button if Lichess handle is not empty
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -23,7 +39,7 @@ const ChessAnalysisForm = () => {
 
   return (
     <div className="max-w-lg mx-auto my-8 p-6 bg-base-200 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Chess Analysis Form</h2>
+      <TypingEffect />
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="handle" className="block text-gray-700 font-bold mb-2">
@@ -35,7 +51,7 @@ const ChessAnalysisForm = () => {
             className="input input-bordered w-full"
             placeholder="Enter Lichess Handle"
             value={handle}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setHandle(e.target.value)}
+            onChange={handleLichessHandleChange}
           />
         </div>
         <div className="mb-4">
@@ -59,12 +75,13 @@ const ChessAnalysisForm = () => {
             className="input input-bordered w-full"
             placeholder="Enter Player Name"
             value={playerName}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setPlayerName(e.target.value)}
+            onChange={handlePlayerNameChange}
           />
         </div>
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className={`btn btn-primary w-full ${formValid ? '' : 'btn-disabled'}`}
+          disabled={!formValid}
         >
           Analyze
         </button>
