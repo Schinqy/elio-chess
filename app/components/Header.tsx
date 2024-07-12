@@ -1,6 +1,6 @@
 // app/components/Header.tsx
 
-'use client';
+
 
 import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -54,9 +54,10 @@ const Header: React.FC = () => {
           </button>
 
           <ul tabIndex={0} className="dropdown-content menu z-[1] bg-base-200 p-6 rounded-box shadow w-56 gap-2">
-            <li><a>Tech tools</a></li>
-            <li><a>Podcast</a></li>
-            <li><a>Community</a></li>
+            <li><a>Elio Chess Clock</a></li>
+            <li><a>Elio Repetoire Builder</a></li>
+            <li><a>SnoFree</a></li>
+            <li><a>Lui Zim Data</a></li>
           </ul>
         </div>
       </div>

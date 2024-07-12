@@ -1,5 +1,5 @@
-// app/components/ChessAnalysisForm.tsx
-'use client'
+'use client';
+
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import TypingEffect from './TypingEffectSlogan';
 
@@ -8,11 +8,12 @@ const ChessAnalysisForm = () => {
   const [pgnFile, setPgnFile] = useState<File | null>(null);
   const [playerName, setPlayerName] = useState<string>('');
   const [formValid, setFormValid] = useState<boolean>(false);
+  const [lichessData, setLichessData] = useState<any>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setPgnFile(e.target.files[0]);
-      setFormValid(!!playerName && !!e.target.files[0]); // Enable button if playerName is not empty and file is selected
+      setFormValid(!!playerName);
     } else {
       setPgnFile(null);
       setFormValid(false);
@@ -22,19 +23,29 @@ const ChessAnalysisForm = () => {
   const handlePlayerNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     setPlayerName(name);
-    setFormValid(!!pgnFile && !!name); // Enable button if both file is selected and playerName is not empty
+    setFormValid(!!pgnFile && !!name);
   };
 
   const handleLichessHandleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const username = e.target.value;
     setHandle(username);
-    setFormValid(!!username); // Enable button if Lichess handle is not empty
+    setFormValid(!!username || (!!pgnFile && !!playerName));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic
     console.log({ handle, pgnFile, playerName });
+
+    if (handle) {
+      try {
+        const response = await fetch(`/api/lichess_user_data?handle=${handle}`);
+        const data = await response.json();
+        setLichessData(data);
+        console.log(data); // Do something with the fetched data
+      } catch (error) {
+        console.error('Error fetching Lichess data:', error);
+      }
+    }
   };
 
   return (
@@ -86,6 +97,14 @@ const ChessAnalysisForm = () => {
           Analyze
         </button>
       </form>
+      {lichessData && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold">Lichess Data</h3>
+          <pre className="bg-base-200 p-4 rounded-md">
+            {JSON.stringify(lichessData, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
